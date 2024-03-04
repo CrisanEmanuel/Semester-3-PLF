@@ -1,0 +1,41 @@
+4. Sa se converteasca un arbore de tipul (2) la un arbore de tipul (1).
+
+Pentru urmatoarele probleme se cer functii Lisp programate in mod recursiv
+(eventual folosind functii MAP):
+Un arbore binar se memoreaza in urmatoarele doua moduri:
+1) (nod nr-subarbori lista-subarbore-1 lista-subarbore-2 ...) (1)
+2) (nod (lista-subarbore-1) (lista-subarbore-2)) (2)
+De exemplu arborele
+   A
+  / \ 
+ B   C
+    / \
+   D   E
+
+se poate reprezenta astfel in cele doua moduri:
+(A 2 B 0 C 2 D 0 E 0) (1)
+(A (B) (C (D) (E))) (2)
+
+
+Model matematic
+                             { nil                                                                            daca l1l2l3 este null      
+                    	     { append(list(l1) U (2), convert_tree(l2) U convert_tree(l3))))  daca l2 != null si l3 != null  -- trebuie modificat modelul matematic seamana prea mult cu lisp, in loc de append se pune reuniune si in loc de list doar elementele intre ()
+convertire_arbore(l1l2l3) =  { append(list(l1), append(list(1), convert_tree(l2)))                            daca l2 != null
+                             { append(list(l1), append(list(1), convert_tree(l3)))                            daca l3 != null
+                             { append(list(l1), list(0))                                                      altfel
+
+
+(defun convertire_arbore(l)
+    (cond
+         ((null l) nil)
+         ((and (not (null (cadr l))) (not (null (caddr l)))) (append (list (car l)) '(2) (convertire_arbore(cadr l)) (convertire_arbore(caddr l))))
+         ((not (null (cadr l))) (append (list (car l)) '(1) (convertire_arbore(cadr l)) ))
+         ((not (null (caddr l))) (append (list (car l)) '(1) (convertire_arbore(caddr l)) ))
+         (T (append (list (car l)) '(0)))
+    )
+)
+
+(print (convertire_arbore '(A (B) (C (D) (E (F))))))
+(print (convertire_arbore '(A(B(D(E(F(G)H(J)(K)))))(C(L(N)(Q(P)(R)))(M))))
+; (A (B) (C (D) (E (F)))) -> (A 2 B 0 C 2 D 0 E 1 F 0) 
+; (A(B(D(E(F(G)H(J)(K)))))(C(L(N)(Q(P)(R)))(M))) -> (A 2 B 1 D 1 E 1 F 2 G 0 H 2 J 0 K 0 C 2 L 2 N 0 Q 2 P 0 R 0 M 0)
